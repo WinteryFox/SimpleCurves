@@ -25,24 +25,31 @@ fun interpolate(p1: Point, p2: Point, stepCount: Int, type: Type): List<Point> {
     val stepWidth = (p2.x - p1.x) / stepCount
 
     for (step in 0..stepCount) {
-        val x = step * stepWidth
-
         if (type == Type.LINEAR) {
             val coefficient = (p2.y - p1.y) / (p2.x - p1.x)
+            val x = step * stepWidth
             val y = coefficient * x + p1.y
 
             interpolated.add(Point(x + p1.x, y))
         } else if (type == Type.SMOOTH) {
-            interpolated.add(Point(x, p1.y + smoothStep(p1, p2, x) * (p2.y - p1.y)))
+            val x = step * stepWidth
+            val smooth = smoothStep(0.0, p2.x - p1.x, x)
+            val normalized = if (p1.y > p2.y)
+                1.0 - smooth
+            else
+                smooth
+            val y = normalized * -(p2.y - p1.x)
+
+            interpolated.add(Point(x + p1.x, y))
         }
     }
 
     return interpolated
 }
 
-fun smoothStep(p1: Point, p2: Point, x: Double): Double {
-    val ret = clamp((x - p1.x) / (p2.x - p1.x), 0.0, 1.0)
-    return (ret * ret * ret * (ret * (ret * 6 - 15) + 10))
+fun smoothStep(edge1: Double, edge2: Double, x: Double): Double {
+    val ret = clamp((x - edge1) / (edge2 - edge1), 0.0, 1.0)
+    return ret * ret * ret * (ret * (ret * 6 - 15) + 10)
 }
 
 fun clamp(x: Double, lowerLimit: Double, upperLimit: Double): Double {

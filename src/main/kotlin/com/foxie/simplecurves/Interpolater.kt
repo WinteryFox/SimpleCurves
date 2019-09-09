@@ -8,34 +8,30 @@ enum class Type {
 fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Point> {
     val graph: MutableList<Point> = mutableListOf()
 
-    var i = 0
-    while (i < points.size - 1) {
+    for (i in 0 until points.size - 1) {
         val p1 = points[i]
         val p2 = points[i + 1]
 
-        graph.add(p1)
         interpolate(p1, p2, stepCount, type).forEach { t -> graph.add(t) }
-
-        i++
     }
-    graph.add(points[points.size - 1])
 
     return graph
 }
 
 fun interpolate(p1: Point, p2: Point, stepCount: Int, type: Type): List<Point> {
-    require(stepCount >= 2) { "Step count must be bigger than 2" }
+    require(stepCount >= 3) { "Step count must be bigger than 3" }
 
     val interpolated: MutableList<Point> = mutableListOf()
     val stepWidth = (p2.x - p1.x) / stepCount
 
-    for (step in 1 until stepCount) {
-        val x = p1.x + step * stepWidth
+    for (step in 0..stepCount) {
+        val x = step * stepWidth
 
         if (type == Type.LINEAR) {
             val coefficient = (p2.y - p1.y) / (p2.x - p1.x)
+            val y = coefficient * x + p1.y
 
-            interpolated.add(Point(x, x * coefficient))
+            interpolated.add(Point(x + p1.x, y))
         } else if (type == Type.SMOOTH) {
             interpolated.add(Point(x, p1.y + smoothStep(p1, p2, x) * (p2.y - p1.y)))
         }

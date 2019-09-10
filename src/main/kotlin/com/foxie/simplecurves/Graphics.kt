@@ -6,13 +6,17 @@ import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 fun renderGraph(width: Int, height: Int, color: Pixel, points: List<Point>, type: Type): List<List<Pixel>> {
-    val graph: List<Point> = interpolateGraph(points, width / (points.size - 1), type)
+    val graph: List<Point> = interpolateGraph(points, width, type)
     val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
 
+    val maxX = graph.maxBy(Point::x) ?: Point(0.0, 0.0)
+    val minX = graph.minBy(Point::x) ?: Point(0.0, 0.0)
+    val maxY = graph.maxBy(Point::y) ?: Point(0.0, 0.0)
+    val minY = graph.minBy(Point::y) ?: Point(0.0, 0.0)
     graph.forEach {
-        val x = it.x.roundToInt()
-        val y = it.y.toInt()
-        image.setRGB(x, height - 1 - y, color.a.shl(24).or(color.r.shl(16)).or(color.g.shl(8)).or(color.b))
+        val x = (width - 1) * ((it.x + (0.0 - minX.x)) / (maxX.x - minX.x))
+        val y = (height - 1) * ((it.y + (0.0 - minY.y)) / (maxY.y - minY.y))
+        image.setRGB(x.roundToInt(), y.toInt(), color.a.shl(24).or(color.r.shl(16)).or(color.g.shl(8)).or(color.b))
     }
 
     val output = File("image.png")

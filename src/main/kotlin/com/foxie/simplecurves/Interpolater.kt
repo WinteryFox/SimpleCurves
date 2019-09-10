@@ -25,8 +25,8 @@ fun interpolate(p1: Point, p2: Point, stepCount: Int, type: Type): List<Point> {
     val stepWidth = (p2.x - p1.x) / stepCount
 
     for (step in 0..stepCount) {
-        val coefficient = (p2.y - p1.y) / (p2.x - p1.x)
         if (type == Type.LINEAR) {
+            val coefficient = (p2.y - p1.y) / (p2.x - p1.x)
             val x = step * stepWidth
             val y = coefficient * x + p1.y
             interpolated.add(Point(x + p1.x, y))

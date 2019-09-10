@@ -6,7 +6,7 @@ import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 fun renderGraph(width: Int, height: Int, color: Pixel, points: List<Point>, type: Type): List<List<Pixel>> {
-    val graph: List<Point> = interpolateGraph(points, width, type)
+    val graph: List<Point> = interpolateGraph(points, width * height, type)
     val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
 
     val maxX = graph.maxBy(Point::x) ?: Point(0.0, 0.0)

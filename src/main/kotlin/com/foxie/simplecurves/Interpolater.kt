@@ -1,18 +1,44 @@
 package com.foxie.simplecurves
 
+import kotlin.math.pow
+
 enum class Type {
     LINEAR,
-    SMOOTH
+    SMOOTH,
+    CUBIC
 }
 
 fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Point> {
     val graph: MutableList<Point> = mutableListOf()
 
-    for (i in 0 until points.size - 1) {
+    /*for (i in 0 until points.size - 1) {
         val p1 = points[i]
         val p2 = points[i + 1]
 
         interpolate(p1, p2, stepCount, type).forEach { t -> graph.add(t) }
+    }*/
+
+    val matrix: MutableList<MutableList<Double>> = mutableListOf()
+    for (i in points.indices) {
+        val a: MutableList<Double> = mutableListOf()
+        for (n in points.indices) {
+            a.add(points[i].x.pow(n))
+        }
+        matrix.add(a)
+    }
+
+    val values = points.map(Point::y)
+
+
+    val stepWidth = (points[points.size - 1].x / points[0].x) / stepCount
+    for (step in 0..stepCount) {
+        val x = step * stepWidth
+
+        var y: Double = 0.0
+        for (i in values.indices) {
+            y += values[i] * x.pow(i)
+        }
+        graph.add(Point(x, y))
     }
 
     return graph

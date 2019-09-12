@@ -18,23 +18,23 @@ fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Poin
         interpolate(p1, p2, stepCount, type).forEach { t -> graph.add(t) }
     }*/
 
-    val matrix: MutableList<MutableList<Double>> = mutableListOf()
+    val matrix: MutableList<Vector> = mutableListOf()
     for (i in points.indices) {
         val a: MutableList<Double> = mutableListOf()
         for (n in points.indices) {
             a.add(points[i].x.pow(n))
         }
-        matrix.add(a)
+        matrix.add(Vector(a))
     }
-
-    val values = solve(matrix, points.map(Point::y))
+    matrix.add(Vector(points.map(Point::y)))
+    val values = solve(matrix)
 
     val stepWidth = (points[points.size - 1].x / points[0].x) / stepCount
     for (step in 0..stepCount) {
         val x = step * stepWidth
 
         var y: Double = 0.0
-        for (i in values.indices) {
+        for (i in values.data.indices) {
             y += values[i] * x.pow(i)
         }
         graph.add(Point(x, y))
@@ -43,24 +43,19 @@ fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Poin
     return graph
 }
 
-fun solve(m: List<MutableList<Double>>, a: List<Double>): List<Double> {
-    val matrix: MutableList<MutableList<Double>> = m.toMutableList()
-    val answers: MutableList<Double> = a.toMutableList()
+fun solve(m: List<Vector>): Vector {
+    val matrix: MutableList<Vector> = m.toMutableList()
 
-    for (i in 1 until matrix.size) {
-        for (row in i until matrix.size) {
-            val new = matrix[row][i - 1]
-            val old = matrix[row - 1][i - 1]
-            val coefficient = new / old
-            println("$new / $old = $coefficient")
-
-            for (column in row until matrix.size) {
-                matrix[row][column] -= coefficient * matrix[row - 1][column]
-            }
+    for (j in 0 until matrix.size - 1) {
+        for (i in j + 1 until matrix.size) {
+            matrix[i] -= matrix[j] * (matrix[i][j] / matrix[j][j])
         }
     }
 
-    return answers
+    for (vec in matrix)
+        println(vec)
+
+    return Vector(emptyList())
 }
 
 fun interpolate(p1: Point, p2: Point, stepCount: Int, type: Type): List<Point> {

@@ -26,8 +26,7 @@ fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Poin
         }
         matrix.add(Vector(a))
     }
-    matrix.add(Vector(points.map(Point::y)))
-    val values = solve(matrix)
+    val values = solve(matrix, Vector(points.map(Point::y)))
 
     val stepWidth = (points[points.size - 1].x / points[0].x) / stepCount
     for (step in 0..stepCount) {
@@ -43,13 +42,24 @@ fun interpolateGraph(points: List<Point>, stepCount: Int, type: Type): List<Poin
     return graph
 }
 
-fun solve(m: List<Vector>): Vector {
-    val matrix: MutableList<Vector> = m.toMutableList()
+fun solve(m: List<Vector>, a: Vector): Vector {
+    val matrix = m.toMutableList()
+    //for (i in 0 until matrix.size)
+    //    matrix[i] = Vector(matrix[i].data.toMutableList().plus(a[i]))
 
     for (j in 0 until matrix.size - 1) {
         for (i in j + 1 until matrix.size) {
             matrix[i] -= matrix[j] * (matrix[i][j] / matrix[j][j])
         }
+    }
+
+    for (vec in matrix)
+        println(vec)
+
+    println("--")
+
+    for (column in matrix.size - 2 downTo 0) {
+        for ()
     }
 
     for (vec in matrix)
